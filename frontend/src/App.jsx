@@ -184,6 +184,9 @@ const App = () => {
     const [modalType, setModalType] = useState('add');
     const [editingTask, setEditingTask] = useState(null);
 
+    const [musicUrl, setMusicUrl] = useState('');
+    const [showPlayer, setShowPlayer] = useState(null);
+
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskDate, setNewTaskDate] = useState('');
 
@@ -222,6 +225,26 @@ const App = () => {
     const handleToggleTask = useCallback(async (task) => {
         await toggleTask(appId, userId, task.id, task.completed);
     }, [userId]);
+
+    const handleSaveUrl = useCallback(() => {
+    if (musicUrl.trim()) {
+        let embedUrl = musicUrl.trim();
+        
+        if (embedUrl.includes('youtube.com/watch')) {
+            const videoId = embedUrl.split('v=')[1]?.split('&')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (embedUrl.includes('youtu.be/')) {
+            const videoId = embedUrl.split('youtu.be/')[1]?.split('?')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (embedUrl.includes('youtube.com/embed/')) {
+            embedUrl = embedUrl;
+        }
+        
+        setShowPlayer(embedUrl);
+    } else {
+        setShowPlayer(null);
+    }
+    }, [musicUrl]);
 
     const handleEditTask = useCallback((task) => {
         setEditingTask(task);
@@ -272,7 +295,12 @@ const App = () => {
             case 'pomodoro':
                 return <PomodoroTimer tasks={tasks} updatePomodoroCount={handleUpdatePomodoroCount} />;
             case 'ambience':
-                return <MusicIntegration />;
+                return <MusicIntegration 
+                            musicUrl={musicUrl} 
+                            setMusicUrl={setMusicUrl} 
+                            showPlayer={showPlayer} 
+                            handleSaveUrl={handleSaveUrl} 
+                        />;
 
             case 'generate':
                 return <TaskGenerator userId={userId} appId={appId} addTask={addTask} />; 
@@ -337,6 +365,34 @@ const App = () => {
                 {renderMainContent()}
             </main>
 
+            {/* Global Music Player */}
+            {showPlayer && (
+                <div className="fixed bottom-4 right-4 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
+                    <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-3 flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                            <Music size={18} className="text-white" />
+                            <span className="text-white font-semibold text-sm">Now Playing</span>
+                        </div>
+                        <button
+                            onClick={() => setShowPlayer(null)}
+                            className="p-1 bg-white/20 hover:bg-white/30 text-white rounded-full transition"
+                            aria-label="Close Player"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
+                    <div className="relative pt-[56.25%]">
+                        <iframe
+                            className="absolute top-0 left-0 w-full h-full"
+                            src={showPlayer}
+                            title="Embedded Ambience"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                </div>
+            )}
             
 
             <Modal
