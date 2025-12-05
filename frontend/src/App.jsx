@@ -11,6 +11,7 @@ import { MusicIntegration } from './components/MusicIntegration';
 import { TaskGenerator } from './components/TaskGenerator';
 import { TaskSchedule } from './components/TaskSchedule'; 
 import { PomodoroTimer } from './components/PomodoroTimer';
+import { TaskStats } from './components/TaskStats';
 
 
 // --- Icon Imports ---
@@ -305,32 +306,13 @@ const App = () => {
             case 'generate':
                 return <TaskGenerator userId={userId} appId={appId} addTask={addTask} />; 
             case 'stats':
-                const completedCount = tasks.filter(t => t.completed).length;
-                const totalPomodoros = tasks.reduce((sum, t) => sum + (t.pomodoros || 0), 0);
-                return (
-                    <div className="p-8 space-y-6">
-                        <h1 className="text-3xl font-extrabold text-gray-900 flex items-center"><BarChart size={28} className="mr-3 text-green-600" />Statistics</h1>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <StatCard title="Total Tasks" value={tasks.length} icon={List} color="text-indigo-500" />
-                            <StatCard title="Completed" value={completedCount} icon={CheckCircle} color="text-green-500" />
-                            <StatCard title="Pomodoros" value={totalPomodoros} icon={Zap} color="text-yellow-500" />
-                            <StatCard title="Rate" value={`${tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0}%`} icon={Circle} color="text-red-500" />
-                        </div>
-                    </div>
-                );
-            default: return null;
+                return <TaskStats tasks={tasks} />;
+            default: 
+            return null;
         }
     };
     
-    const StatCard = ({ title, value, icon: Icon, color }) => (
-        <div className="p-4 bg-white rounded-xl flex items-center space-x-3 border shadow-sm">
-            <Icon size={24} className={color} />
-            <div>
-                <p className="text-xs text-gray-500 font-medium">{title}</p>
-                <p className="text-2xl font-bold text-gray-900">{value}</p>
-            </div>
-        </div>
-    );
+
 
     return (
         <div className="min-h-screen flex bg-gray-50 font-sans">
