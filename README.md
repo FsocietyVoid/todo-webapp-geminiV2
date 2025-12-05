@@ -170,4 +170,8 @@ For questions or support, please open an issue in the GitHub repository.
 
 ---
 
+<<<<<<< HEAD
 ⭐ If you find this project helpful, please consider giving it a star!
+=======
+⭐ If you find this project helpful, please consider giving it a star!
+>>>>>>> 85c8b5c38eedb635a84106816ccc55d92d905caf
